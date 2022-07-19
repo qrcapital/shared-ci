@@ -47,5 +47,5 @@ jobs:
           destination-github-username: ${{ github.repository_owner }}
           destination-repository-name: ${{ inputs.gitops_repo }}
           user-email: ${{ inputs.commit_email }}
-          commit-message: Nova versão do ${{ github.repository }}
+          commit-message: "[${{ inputs.image_tag }}]: ${{ github.sha }}"
           target-branch: main
