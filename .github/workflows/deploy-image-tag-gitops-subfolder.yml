@@ -1,0 +1,55 @@
+name: Deploy Image Tag to GitOps Repo
+
+on:
+  workflow_call:
+    inputs:
+      gitops_repo:
+        required: true
+        type: string
+      commit_email:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+      subfolder:
+        required: true
+        type: string
+    secrets:
+      GH_PAT:
+        required: true
+
+jobs:
+  deploy:
+    name: Update Image Tag to GitOps Repo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code from GitOps Repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository_owner }}/${{ inputs.gitops_repo }}
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Update Image Tag
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag }}
+        run: |
+          cd ${{ github.event.repository.name }}
+          cd ${{ inputs.subfolder }}
+          rm deployment.yml
+          cp deployment.yml.example deployment.yml
+          sed -i "s/TAG/$IMAGE_TAG/g" deployment.yml
+
+      - name: Pushes modification to GitOps Repo
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.GH_PAT }}
+        with:
+          source-directory: .
+          destination-github-username: ${{ github.repository_owner }}
+          destination-repository-name: ${{ inputs.gitops_repo }}
+          user-email: ${{ inputs.commit_email }}
+          commit-message: "[${{ github.event.repository.name }}]: ${{ inputs.image_tag }}"
+          target-branch: main
