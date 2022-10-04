@@ -17,6 +17,10 @@ on:
       AWS_ECR_URL:
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy:
     name: Deploy Image on Lambda
