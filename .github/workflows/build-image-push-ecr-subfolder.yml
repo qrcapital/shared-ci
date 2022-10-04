@@ -52,3 +52,12 @@ jobs:
           cd ${{ inputs.subfolder }}
           docker build -t $ECR_URL/$REPO:$IMAGE_TAG .
           docker push $ECR_URL/$REPO:$IMAGE_TAG
+
+      - name: Update Lambda Function
+        env:
+          FUNCTION_NAME: ${{ inputs.repo }}
+          IMAGE_URI: ${{ secrets.AWS_ECR_URL }}/${{ inputs.repo }}:${{ inputs.image_tag}}
+        run: |
+          aws lambda update-function-code \
+            --function-name $FUNCTION_NAME \
+            --image-uri $IMAGE_URI
