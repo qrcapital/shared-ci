@@ -21,6 +21,7 @@ jobs:
       image_tag: ${{ github.sha }}
       subfolder: ./scripts/${{ inputs.script_name }}/script
       repo: ${{ inputs.script_name }}
+      dockerfile: ./scripts/Dockerfile
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ASSUMED_ROLE: ${{ secrets.AWS_ECR_ROLE }}
