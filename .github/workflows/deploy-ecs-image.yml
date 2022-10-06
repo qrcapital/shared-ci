@@ -1,0 +1,47 @@
+on:
+  workflow_call:
+    inputs:
+      lambda_script:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+    secrets:
+      AWS_ASSUMED_ROLE:
+        required: true
+      AWS_REGION:
+        required: true
+      AWS_ECR_URL:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUMED_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create new task definition and update service
+        env:
+          ECS_CLUSTER: ${{ inputs.project }}
+          SERVICE_NAME: ${{ inputs.service }}
+          NEW_IMAGE: ${{ secrets.AWS_ECR_URL }}/${{ inputs.image }}
+          TASK_FAMILY: ${{ inputs.project }}-${{ inputs.service }}
+        run: |
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_FAMILY" --region ${{ secrets.AWS_REGION }})
+          NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$NEW_IMAGE" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities)')
+
+          NEW_TASK_INFO=$(aws ecs register-task-definition --region ${{ secrets.AWS_REGION }} --cli-input-json "$NEW_TASK_DEFINITION")
+          NEW_REVISION=$(echo $NEW_TASK_INFO | jq '.taskDefinition.revision')
+          aws ecs update-service --cluster ${ECS_CLUSTER} \
+                       --service ${SERVICE_NAME} \
+                       --task-definition ${TASK_FAMILY}:${NEW_REVISION}
