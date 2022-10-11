@@ -54,7 +54,7 @@ jobs:
           ECR_URL: ${{ secrets.AWS_ECR_URL }}
           REPO: ${{ steps.prepare_variable.outputs.script }}
           IMAGE_TAG: ${{ inputs.image_tag }}
-          DOCKERFILE_PATH: scripts
+          DOCKERFILE_PATH: scripts/Dockerfile
           CONTEXT_PATH: scripts/${{ steps.prepare_variable.outputs.script }}/script
         run: |
           docker build -f $DOCKERFILE_PATH -t $ECR_URL/$REPO:$IMAGE_TAG $CONTEXT_PATH
