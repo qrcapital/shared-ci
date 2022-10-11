@@ -36,9 +36,9 @@ jobs:
 
       - name: Move to target directory
         run: |
-        cd scripts
-        cd ${{ steps.prepare_variable.outputs.script }}
-        cd terraform
+          cd scripts
+          cd ${{ steps.prepare_variable.outputs.script }}
+          cd terraform
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -110,4 +110,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: terraform apply -auto-approve -input=false
-
