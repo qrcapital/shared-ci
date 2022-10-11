@@ -34,8 +34,6 @@ jobs:
           script_name=${{ matrix.script }}
           echo "::set-output name=script::${script_name%%/*}"
 
-      - run: echo ${{ steps.prepare_variable.outputs.script }}
-
       - name: Checkout code
         uses: actions/checkout@v3
 
