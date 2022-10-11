@@ -32,7 +32,7 @@ jobs:
         id: prepare_variable
         run: |
           script_name=${{ matrix.script }}
-          echo "::set-output name=script::${script_name%%/*}}"
+          echo "::set-output name=script::${script_name%%/*}"
 
       - run: echo ${{ steps.prepare_variable.outputs.script }}
 
