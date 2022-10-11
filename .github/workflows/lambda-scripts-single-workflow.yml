@@ -26,8 +26,7 @@ jobs:
     name: Build Image and Push to ECR
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        script: ${{ fromJson(inputs.scripts) }}
+      matrix: ${{ fromJson(inputs.scripts) }}
     steps:
       - name: Prepare variable
         run: |
