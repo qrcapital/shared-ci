@@ -24,7 +24,6 @@ permissions:
 jobs:
   build-and-deploy:
     name: Build Image and Push to ECR
-    needs: prepare-matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
