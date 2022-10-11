@@ -22,12 +22,23 @@ permissions:
   contents: read
 
 jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      parsed_scripts: ${{ steps.scripts_list.outputs.stringList }}
+    steps:
+      - id: scripts_list
+        uses: lucaspinheirogit/list-from-string-array-action@v1.4.3
+        with:
+          stringArray: ${{ inputs.scripts }}
+
   build-and-deploy:
     name: Build Image and Push to ECR
+    needs: prepare-matrix
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        script: ${{ inputs.scripts }}
+        script: ${{ needs.prepare-matrix.outputs.parsed_scripts }}
     steps:
       - name: Prepare variable
         run: |
