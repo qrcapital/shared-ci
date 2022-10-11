@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        script: ${{ fromJson(inputs.scripts) }}
+        script: ${{ fromJson(inputs.scripts.scripts) }}
     steps:
       - name: Prepare variable
         run: |
