@@ -29,9 +29,10 @@ jobs:
       matrix: ${{ fromJson(inputs.scripts) }}
     steps:
       - name: Prepare variable
+        id: prepare_variable
         run: |
           script_name=${{ matrix.script }}
-          script=${script_name%%/*}
+          echo "::set-output name=script::${script_name%%/*}}"
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -49,10 +50,10 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_URL: ${{ secrets.AWS_ECR_URL }}
-          REPO: ${{ env.script }}
+          REPO: ${{ steps.prepare_variable.outputs.script }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           DOCKERFILE_PATH: scripts
-          CONTEXT_PATH: scripts/${{ env.script }}/script
+          CONTEXT_PATH: scripts/${{ steps.prepare_variable.outputs.script }}/script
         run: |
           docker build -f $DOCKERFILE_PATH -t $ECR_URL/$REPO:$IMAGE_TAG $CONTEXT_PATH
           docker push $ECR_URL/$REPO:$IMAGE_TAG
@@ -65,8 +66,8 @@ jobs:
 
       - name: Update Lambda Function
         env:
-          FUNCTION_NAME: ${{ env.script }}
-          IMAGE_URI: ${{ secrets.AWS_ECR_URL }}/${{ env.script }}:${{ inputs.image_tag }}
+          FUNCTION_NAME: ${{ steps.prepare_variable.outputs.script }}
+          IMAGE_URI: ${{ secrets.AWS_ECR_URL }}/${{ steps.prepare_variable.outputs.script }}:${{ inputs.image_tag }}
         run: |
           aws lambda update-function-code \
             --function-name $FUNCTION_NAME \
