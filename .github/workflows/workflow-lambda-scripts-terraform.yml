@@ -5,7 +5,7 @@ on:
         required: true
         type: string
     secrets:
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: true
       AWS_ACCESS_KEY_ID:
         required: true
@@ -75,7 +75,7 @@ jobs:
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           script: |
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
