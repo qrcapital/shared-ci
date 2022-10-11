@@ -1,10 +1,13 @@
 on:
   workflow_call:
     inputs:
-      lambda_script:
+      project:
         required: true
         type: string
-      image:
+      service:
+        required: true
+        type: string
+      image_tag:
         required: true
         type: string
     secrets:
@@ -34,7 +37,7 @@ jobs:
         env:
           ECS_CLUSTER: ${{ inputs.project }}
           SERVICE_NAME: ${{ inputs.service }}
-          NEW_IMAGE: ${{ secrets.AWS_ECR_URL }}/${{ inputs.image }}
+          NEW_IMAGE: ${{ secrets.AWS_ECR_URL }}/${{ inputs.service }}:${{ inputs.image_tag }}
           TASK_FAMILY: ${{ inputs.project }}-${{ inputs.service }}
         run: |
           TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_FAMILY" --region ${{ secrets.AWS_REGION }})
