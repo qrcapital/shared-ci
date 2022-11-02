@@ -37,7 +37,7 @@ jobs:
         env:
           ECS_CLUSTER: ${{ inputs.project }}
           SERVICE_NAME: ${{ inputs.service }}
-          NEW_IMAGE: ${{ secrets.AWS_ECR_URL }}/${{ inputs.service }}:${{ inputs.image_tag }}
+          NEW_IMAGE: ${{ secrets.AWS_ECR_URL }}/${{ inputs.project}}-${{ inputs.service }}:${{ inputs.image_tag }}
           TASK_FAMILY: ${{ inputs.project }}-${{ inputs.service }}
         run: |
           TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_FAMILY" --region ${{ secrets.AWS_REGION }})
