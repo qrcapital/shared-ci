@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      scripts:
+      dir:
         required: true
         type: string
     secrets:
@@ -18,21 +18,10 @@ jobs:
   terraform:
     name: "Terraform"
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJson(inputs.scripts) }}
     defaults:
       run:
-        working-directory: scripts/${{ matrix.script }}
+        working-directory: ${{ inputs.dir }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Prepare variable
-        id: prepare_variable
-        run: |
-          script_name=${{ matrix.script }}
-          echo "::set-output name=script::${script_name%%/*}"
-
       - name: Checkout code
         uses: actions/checkout@v3
 
