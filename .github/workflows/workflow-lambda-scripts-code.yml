@@ -7,6 +7,9 @@ on:
       image_tag:
         required: true
         type: string
+      dir:
+        required: true
+        type: string
     secrets:
       AWS_REGION:
         required: true
@@ -53,7 +56,7 @@ jobs:
           REPO: ${{ steps.prepare_variable.outputs.script }}
           IMAGE_TAG: ${{ inputs.image_tag }}
           DOCKERFILE_PATH: ./Dockerfile
-          CONTEXT_PATH: scripts/${{ steps.prepare_variable.outputs.script }}
+          CONTEXT_PATH: ${{ inputs.dir }}/${{ steps.prepare_variable.outputs.script }}
         run: |
           docker build -f $DOCKERFILE_PATH -t $ECR_URL/$REPO:$IMAGE_TAG $CONTEXT_PATH
           docker push $ECR_URL/$REPO:$IMAGE_TAG
